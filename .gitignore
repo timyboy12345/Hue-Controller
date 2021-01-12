@@ -47,3 +47,6 @@ Thumbs.db
 
 # Automatically Created Style Sheets
 **/tailwind.css
+
+# Private files
+README.private.md

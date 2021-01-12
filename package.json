@@ -6,7 +6,7 @@
     "start": "ng serve",
     "build": "npm run tailwind:dev && ng build",
     "build:prod": "npm run tailwind:prod && ng build --prod",
-    "upload": "scp -r ./dist/Hue-Controller/* root@95.179.187.20:/var/www/home.arendz.nl/",
+    "upload": "scp -r $npm_config_source $npm_config_username@$npm_config_ip:$npm_config_destination",
     "deploy": "npm run build:prod && npm run upload",
     "test": "ng test",
     "lint": "ng lint",
