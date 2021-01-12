@@ -13,59 +13,48 @@ export class NewDecibelMeterService {
   private connection?: Connection;
 
   public supportsMicrophoneInput: boolean;
+  private listeningInterval: any;
 
   constructor() {
-    // user media
-    if (!navigator.getUserMedia) {
-      // @ts-ignore
-      navigator.getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
-    }
+    this.supportsMicrophoneInput = false;
 
-    if (!this.supportsAudioInput()) {
-      this.supportsMicrophoneInput = false;
-      return;
-    }
+    this.supportsAudioInput().then(value => {
+      this.supportsMicrophoneInput = true;
+      const newDecibelMeterService = this;
 
-    this.supportsMicrophoneInput = true;
-    const newDecibelMeterService = this;
+      navigator.mediaDevices.enumerateDevices().then(sources => {
+        sources.forEach((source) => {
+          if (source.kind === 'audioinput') {
+            newDecibelMeterService.sources.push(source);
+            newDecibelMeterService.sourcesIndex[source.deviceId] = source;
+          }
+        });
 
-    navigator.mediaDevices.enumerateDevices().then(sources => {
-      sources.forEach((source) => {
-        if (source.kind === 'audioinput') {
-          newDecibelMeterService.sources.push(source);
-          newDecibelMeterService.sourcesIndex[source.deviceId] = source;
-        }
+        this.sourcesReady = true;
+
+        this.startLoop();
       });
-
-      this.sourcesReady = true;
-
-      this.startLoop();
     });
   }
 
-  private supportsAudioInput(): boolean {
-    if (!navigator.getUserMedia) {
-      return false;
-      // throw new Error('DecibelMeter: getUserMedia not supported');
+  public async supportsAudioInput(): Promise<boolean> {
+    const newUserMedia = await navigator.mediaDevices.getUserMedia({audio: true, video: false});
+
+    if (!navigator.getUserMedia && !newUserMedia) {
+      return Promise.reject('No UserMedia');
     }
 
-    // audio context
-    // window.AudioContext = window.AudioContext || window.webkitAudioContext;
-
-    if (!window.AudioContext) {
-      return false;
-      // throw new Error('DecibelMeter: AudioContext not supported');
+    // @ts-ignore
+    if (!window.AudioContext && !window.webkitAudioContext) {
+      return Promise.reject('No AudioContext');
     }
 
-    // audio sources
     if (!navigator.mediaDevices) {
-      return false;
-      // throw new Error('DecibelMeter: MediaStreamTrack not supported');
+      return Promise.reject('No MediaDevices');
     }
 
     if (!navigator.mediaDevices.enumerateDevices) {
-      return false;
-      // throw new Error('DecibelMeter: mediaDevices.enumerateDevices() not supported');
+      return Promise.reject('No EnumerateDevices');
     }
 
     return true;
@@ -82,6 +71,10 @@ export class NewDecibelMeterService {
       this.source = source;
 
       function success(stream: MediaStream): void {
+        console.log(stream);
+
+        // @ts-ignore
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
         const audioContext = new AudioContext();
 
         const connection: Connection = {
@@ -119,7 +112,10 @@ export class NewDecibelMeterService {
         reject(false);
       }
 
-      navigator.getUserMedia(constraints, success, error);
+      // navigator.getUserMedia(constraints, success, error);
+      navigator.mediaDevices.getUserMedia(constraints)
+        .then(success)
+        .catch(error);
     });
   }
 
@@ -190,6 +186,10 @@ export class NewDecibelMeterService {
 
     this.connection.source.connect(this.connection.analyser);
     this.listening = true;
+
+    if (this.listeningInterval == null) {
+      this.startLoop();
+    }
   }
 
   public stopListening(): void {
@@ -207,6 +207,8 @@ export class NewDecibelMeterService {
 
     this.connection.source.disconnect(this.connection.analyser);
     this.listening = false;
+    clearInterval(this.listeningInterval);
+    this.listeningInterval = null;
   }
 
   private startLoop(): void {
@@ -226,11 +228,9 @@ export class NewDecibelMeterService {
         console.log(`DB: ${dB} / Percent: ${percent}`);
         // dispatch(meter, 'sample', [dB, percent, value]);
       }
-
-      requestAnimationFrame(update);
     }
 
-    update();
+    this.listeningInterval = window.setInterval(update, 100);
   }
 
   // DecibelMeter.prototype.on = function (eventName, handler) {

@@ -23,20 +23,24 @@ export class AudioComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    if (this.newDecibelMeterService.supportsMicrophoneInput) {
-      window.setTimeout(() => {
-        this.devices = this.newDecibelMeterService.getSources();
+    this.newDecibelMeterService.supportsAudioInput()
+      .then(() => {
+        if (this.newDecibelMeterService.supportsMicrophoneInput) {
+          window.setTimeout(() => {
+            this.devices = this.newDecibelMeterService.getSources();
 
-        this.newDecibelMeterService.connectToId(this.devices[0].deviceId, this.sourceChosen).then(value => {
-          console.log(`Succesfully connected to source: ${value}`);
+            this.newDecibelMeterService.connectToId(this.devices[0].deviceId, this.sourceChosen).then(value => {
+              console.log(`Succesfully connected to source: ${value}`);
 
-          this.newDecibelMeterService.listen();
-        });
-      }, 400);
-    } else {
-      const popup = this.popupService.add('Geen toegang tot je microfoon', 'We hebben in deze browser geen toegang tot je microfoons', PopupType.DANGER);
-      this.shouldClosePopups.push(popup);
-    }
+              this.newDecibelMeterService.listen();
+            });
+          }, 400);
+        }
+      })
+      .catch(reason => {
+        const popup = this.popupService.add('Geen toegang tot je microfoon', 'Geen toegang tot microfoons: ' + reason, PopupType.DANGER);
+        this.shouldClosePopups.push(popup);
+      });
   }
 
   public chooseSource(deviceId: string): void {
