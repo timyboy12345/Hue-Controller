@@ -4,10 +4,15 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "npm run tailwind:dev && ng build",
+    "build:prod": "npm run tailwind:prod && ng build --prod",
+    "upload": "scp -r ./dist/Hue-Controller/* root@95.179.187.20:/var/www/home.arendz.nl/",
+    "deploy": "npm run build:prod && npm run upload",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "tailwind:dev": "npx tailwindcss@2.0.0-alpha.11 build style.scss -c tailwind.config.js -o ./src/tailwind.css",
+    "tailwind:prod": "NODE_ENV=production npx tailwindcss@2.0.0-alpha.11 build style.scss -c tailwind.config.js -o ./src/tailwind.css"
   },
   "private": true,
   "dependencies": {
@@ -19,8 +24,12 @@
     "@angular/platform-browser": "~11.0.0",
     "@angular/platform-browser-dynamic": "~11.0.0",
     "@angular/router": "~11.0.0",
+    "decibel-meter": "^2.0.0",
+    "material-icons": "^0.5.2",
     "rxjs": "~6.6.0",
+    "tailwindcss": "^2.0.2",
     "tslib": "^2.0.0",
+    "uuid": "^8.3.2",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {
@@ -29,6 +38,7 @@
     "@angular/compiler-cli": "~11.0.0",
     "@types/jasmine": "~3.6.0",
     "@types/node": "^12.11.1",
+    "@types/uuid": "^8.3.0",
     "codelyzer": "^6.0.0",
     "jasmine-core": "~3.6.0",
     "jasmine-spec-reporter": "~5.0.0",

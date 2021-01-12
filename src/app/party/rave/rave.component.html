@@ -1,0 +1,30 @@
+<div *ngIf="lights">
+  <div class="flex flex-col bg-white rounded divide-y divide-gray-100 shadow">
+    <div *ngFor="let light of lights"
+         class="p-4 hover:bg-gray-100 transition-colors duration-100">
+      <div class="flex flex-row justify-between items-center">
+        <div class="text-blue-800 font-bold">{{ light.name }}</div>
+        <div class="cursor-pointer"
+             (click)="light.config.expanded = light.config.expanded ? !light.config.expanded : true">
+          <div class="material-icons" *ngIf="!light.config.expanded">expand_more</div>
+          <div class="material-icons" *ngIf="light.config.expanded">expand_less</div>
+        </div>
+      </div>
+      <div class="mt-2" *ngIf="light.config.expanded">
+        <div class="text-sm bg-gray-200 rounded p-2 mb-4">
+          {{ light.getInfo() | json }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="my-4">
+  <button class="rounded bg-blue-800 py-2 px-4 text-white" (click)="enableParty()" *ngIf="!shouldUpdate">
+    Feesten maar!
+  </button>
+
+  <button class="rounded bg-red-500 py-2 px-4 text-white" (click)="disableParty()" *ngIf="shouldUpdate">
+    Stop het feest
+  </button>
+</div>

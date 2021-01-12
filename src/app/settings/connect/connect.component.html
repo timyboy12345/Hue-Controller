@@ -1,0 +1,21 @@
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <app-card cardTitle="Hubs" cardSubTitle="Beheer hier de aangesloten hub" class="md:col-span-2"
+            cardContent="De hub is het middelpunt van deze applicatie, zonder hub geen feestje!"></app-card>
+
+  <app-card cardTitle="Voeg een hub toe" cardSubTitle="Voeg hier een nieuwe hub toe">
+    <div class="my-2 flex flex-col">
+      <label for="hue_ip" class=" mb-1 text-xs text-gray-500">IP</label>
+      <input id="hue_ip" [(ngModel)]="ip" class="border border-gray-300 py-1 px-2 rounded" type="text"
+             placeholder="IP van Hue Bridge">
+      <button class="rounded px-4 py-2 bg-blue-800 text-white text-sm mt-2 transition-opacity duration-100"
+              (click)="submitIp()" [disabled]="!canSubmit" [ngClass]="{'opacity-50': !canSubmit}">
+        Opslaan
+      </button>
+    </div>
+  </app-card>
+
+  <app-card cardTitle="Verbonden hubs" cardSubTitle="Met deze hub ben je momenteel verbonden">
+    <div *ngIf="connectedIp" class="text-blue-800">{{ connectedIp }}</div>
+    <div *ngIf="!connectedIp">Je bent momenteel niet verbonden met een hub</div>
+  </app-card>
+</div>

@@ -1,0 +1,10 @@
+<div class="bg-white rounded shadow">
+  <div id="content" class="p-4">
+    <h3 class="text-lg text-black font-medium">{{ cardTitle }}</h3>
+    <h4 *ngIf="cardSubTitle" class="text-sm text-gray-600">{{ cardSubTitle }}</h4>
+
+    <p class="text-sm text-gray-800 mt-2" *ngIf="cardContent">{{ cardContent }}</p>
+
+    <ng-content></ng-content>
+  </div>
+</div>

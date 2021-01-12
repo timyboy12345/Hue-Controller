@@ -1,27 +1,12 @@
-# HueController
+# Hue Party Controller
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.1.
+This package makes it possible to flash your Hue lights in countless colors. Just spin it up, connect your device to your Hue Hub and get access to all.
 
-## Development server
+This application was made because a lot of free Philips Hue apps have a limited amount of lights you can control, before having to upgrade to a paid version.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+The end goal is to have a free application that flash your lights based on microphone input (music), without any limitations.
 
-## Code scaffolding
+## Development
+The application is build with the Angular CLI and uses Angular Routing. To spin it up locally, use `ng serve`. If you want to know more about all the commands, look in the `package.json` file, as there are some helpfull commands here.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+For styling the application, I've chosen Tailwind CSS, as this gives the application a lot of flexibility. The application is styled based on the [Material Design Guidelines](https://material.io/)
