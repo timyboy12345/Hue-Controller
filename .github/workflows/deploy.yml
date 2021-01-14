@@ -1,0 +1,38 @@
+#on:
+#  release:
+#    types: [created]
+
+on:
+  push:
+    branches:
+      - main
+      - v1
+
+env:
+  NODE_VERSION: '10.x'
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: npm install, build, and test
+        run: |
+          # Build and test the project, then
+          # deploy to Azure Web App.
+          npm install
+          npm run build:prod
+          # npm run test
+      - name: Deploy to server
+        uses: garygrossgarten/github-action-scp@release
+        with:
+          local: ./dist/Hue-Controller/*
+          remote: ${{ secrets.DEPLOY_DIRECTORY }}
+          host: ${{ secrets.DEPLOY_IP }}
+          username: ${{ secrets.DEPLOY_USERNAME }}
+          password: ${{ secrets.DEPLOY_PASSWORD }}
