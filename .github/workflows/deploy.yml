@@ -9,7 +9,7 @@ on:
       - v1
 
 env:
-  NODE_VERSION: '10.x'
+  NODE_VERSION: 12
 
 jobs:
   build-and-deploy:
