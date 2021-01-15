@@ -31,7 +31,7 @@ jobs:
       - name: Deploy to server
         uses: garygrossgarten/github-action-scp@release
         with:
-          local: ./dist/Hue-Controller/*
+          local: dist/Hue-Controller
           remote: ${{ secrets.DEPLOY_DIRECTORY }}
           host: ${{ secrets.DEPLOY_IP }}
           username: ${{ secrets.DEPLOY_USERNAME }}
