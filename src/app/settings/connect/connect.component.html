@@ -7,15 +7,60 @@
       <label for="hue_ip" class=" mb-1 text-xs text-gray-500">IP</label>
       <input id="hue_ip" [(ngModel)]="ip" class="border border-gray-300 py-1 px-2 rounded" type="text"
              placeholder="IP van Hue Bridge">
-      <button class="rounded px-4 py-2 bg-blue-800 text-white text-sm mt-2 transition-opacity duration-100"
-              (click)="submitIp()" [disabled]="!canSubmit" [ngClass]="{'opacity-50': !canSubmit}">
+      <button
+        class="rounded px-4 py-2 bg-blue-800 hover:bg-blue-900 text-white text-sm mt-2 transition-opacity duration-100"
+        (click)="submitIp()" [disabled]="!canSubmit" [ngClass]="{'opacity-50': !canSubmit}">
         Opslaan
       </button>
     </div>
   </app-card>
 
-  <app-card cardTitle="Verbonden hubs" cardSubTitle="Met deze hub ben je momenteel verbonden">
-    <div *ngIf="connectedIp" class="text-blue-800">{{ connectedIp }}</div>
-    <div *ngIf="!connectedIp">Je bent momenteel niet verbonden met een hub</div>
+  <app-card cardTitle="Verbonden hub" cardSubTitle="Met deze hub ben je momenteel verbonden" *ngIf="connectedIp">
+    <a href="{{ connectedIp }}" *ngIf="connectedIp && !config" class="text-blue-800" target="_blank">
+      {{ connectedIp }}
+    </a>
+
+    <div class="divide-y divide-gray-100 -mx-4 mt-2" *ngIf="config">
+      <div class="py-4 px-4 flex flex-row items-center">
+        <div class="material-icons mr-4 text-blue-800">home</div>
+        <div class="flex-col">
+          <h4 class="text-gray-800">Naam</h4>
+          <h5 class="text-gray-400 text-sm">{{ config.name }}</h5>
+        </div>
+      </div>
+      <a [href]="'//' + config.ipaddress" target="_blank" class="hover:bg-gray-100 transition-opacity duration-100 py-4 px-4 flex flex-row items-center">
+        <div class="material-icons mr-4 text-blue-800">network_wifi</div>
+        <div class="flex-col">
+          <h4 class="text-gray-800">IP</h4>
+          <h5 class="text-gray-400 text-sm">{{ config.ipaddress }}</h5>
+        </div>
+      </a>
+      <div class="py-4 px-4 flex flex-row items-center">
+        <div class="material-icons mr-4 text-blue-800">bug_report</div>
+        <div class="flex-col">
+          <h4 class="text-gray-800">Softwareversie</h4>
+          <h5 class="text-gray-400 text-sm">{{ config.swversion }}</h5>
+        </div>
+      </div>
+    </div>
+
+    <button (click)="remove()"
+            class="mt-4 rounded text-sm px-4 py-2 bg-red-600 hover:bg-red-700 text-white mt-2 transition-opacity duration-100">
+      Verwijderen
+    </button>
   </app-card>
+
+  <app-card *ngIf="config && config.users" cardTitle="Verbonden clients"
+            cardSubTitle="Dit zijn alle gebruikers die toegang hebben tot deze hub">
+    <div class="divide-y divide-gray-100 -mx-4 mt-2">
+      <div class="py-4 px-4 flex flex-col" *ngFor="let user of config.users">
+        <h6 class="text-gray-600 text-xs">{{ user.id }}</h6>
+        <h4 class="text-gray-800">{{ user.name }}</h4>
+        <h5 class="text-gray-400 text-sm">{{ user["last use date"] }}</h5>
+      </div>
+    </div>
+  </app-card>
+
+  <app-card cardTitle="Momenteel niet verbonden" cardSubTitle="Je bent momenteel niet verbonden met een hub"
+            *ngIf="!connectedIp"></app-card>
 </div>

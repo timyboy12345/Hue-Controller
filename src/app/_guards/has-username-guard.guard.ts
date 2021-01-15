@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlTree} from '@angular/router';
 import {Observable} from 'rxjs';
-import {ConnectService} from '../_services/hue/connect.service';
+import {HubService} from '../_services/hue/hub.service';
 import {PopupService} from '../_services/popup.service';
 import {PopupType} from '../_interfaces/popup';
 
@@ -9,7 +9,7 @@ import {PopupType} from '../_interfaces/popup';
   providedIn: 'root'
 })
 export class HasUsernameGuardGuard implements CanActivate {
-  constructor(private connectService: ConnectService,
+  constructor(private connectService: HubService,
               private popupService: PopupService) {
   }
 

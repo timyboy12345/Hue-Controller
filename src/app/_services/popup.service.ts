@@ -18,7 +18,7 @@ export class PopupService {
     const popup = new Popup(title, description, type, this);
     this.popups.push(popup);
     console.log(`${type} ${title}: ${description}`);
-    window.alert(description);
+    // window.alert(description);
     return popup;
   }
 

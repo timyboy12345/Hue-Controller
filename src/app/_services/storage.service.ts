@@ -28,4 +28,9 @@ export class StorageService {
     window.localStorage.setItem(key, item);
     return true;
   }
+
+  public clear(key: string): boolean {
+    window.localStorage.removeItem(key);
+    return true;
+  }
 }
