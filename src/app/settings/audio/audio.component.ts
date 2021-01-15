@@ -33,17 +33,22 @@ export class AudioComponent implements OnInit, OnDestroy {
           window.setTimeout(() => {
             this.devices = this.newDecibelMeterService.getSources();
 
-            this.newDecibelMeterService.connectToId(this.devices[0].deviceId, this.sourceChosen).then(value => {
-              console.log(`Succesfully connected to source: ${value}`);
+            this.newDecibelMeterService.connectToId(this.devices[0].deviceId, this.sourceChosen)
+              .then(value => {
+                console.log(`Succesfully connected to source: ${value}`);
 
-              this.newDecibelMeterService.listen().then(() => {
-                this.listening = true;
+                this.newDecibelMeterService.listen().then(() => {
+                  this.listening = true;
 
-                this.interval = window.setInterval(() => {
-                  this.getVolume();
-                }, 500);
+                  this.interval = window.setInterval(() => {
+                    this.getVolume();
+                    console.log(this.volume);
+                  }, 100);
+                });
+              })
+              .catch(reason => {
+
               });
-            });
           }, 400);
         }
       })
@@ -67,6 +72,7 @@ export class AudioComponent implements OnInit, OnDestroy {
   }
 
   private disconnect(): void {
+    clearInterval(this.interval);
     this.listening = false;
     this.newDecibelMeterService.disconnect();
     this.shouldClosePopups.forEach(p => p.close());

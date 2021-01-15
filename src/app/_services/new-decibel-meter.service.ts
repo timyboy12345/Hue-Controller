@@ -68,8 +68,8 @@ export class NewDecibelMeterService {
   }
 
   // util
-  private connectTo(source: MediaDeviceInfo, callback: any): Promise<boolean> {
-    return new Promise<boolean>((resolve, reject) => {
+  private connectTo(source: MediaDeviceInfo, callback: any): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
       const newDecibelMeterService = this;
 
       const oldSource = this.source;
@@ -78,7 +78,7 @@ export class NewDecibelMeterService {
       this.source = source;
 
       function success(stream: MediaStream): void {
-        console.log(stream);
+        // console.log(stream);
 
         // @ts-ignore
         const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -103,7 +103,7 @@ export class NewDecibelMeterService {
 
         newDecibelMeterService.sourceChanged(oldSource, source);
 
-        resolve(true);
+        resolve();
 
         // if (changing && meter.handle.sourceChange) {
         //   newDecibelMeterService.dispatch(meter, 'source-change', [source, oldSource, meter]);
@@ -130,37 +130,36 @@ export class NewDecibelMeterService {
     return this.sources;
   }
 
-  public connectToId(source: string, callback: any): Promise<boolean> {
+  public connectToId(source: string, callback: any): Promise<string> {
     return this.connect(source, callback);
   }
 
-  private connect(source: string, callback: any): Promise<boolean> {
+  private connect(source: string, callback: any): Promise<string> {
     let realSource;
 
     if (!this.sourcesReady) {
-      throw new Error('DecibelMeter: Audio sources not ready');
+      return Promise.reject('DecibelMeter: Audio sources not ready');
     }
 
     if (source == null) {
-      throw new Error('DecibelMeter: No audio source specified');
+      return Promise.reject('DecibelMeter: No audio source specified');
     }
 
     realSource = this.sourcesIndex[source];
 
     if (realSource == null) {
-      throw new Error('DecibelMeter: Attempted to select invalid audio source');
+      return Promise.reject('DecibelMeter: Attempted to select invalid audio source');
     }
 
     if (this.source === realSource) {
-      console.log('Already connected to this source!');
-      return Promise.reject();
+      return Promise.reject('Already connected to this source!');
     }
 
     return this.connectTo(realSource, callback);
   }
 
   private sourceChanged(oldSource: any, newSource: any): void {
-    console.log('Source changed!');
+    // console.log('Source changed!');
   }
 
   public disconnect(): void {
@@ -179,8 +178,7 @@ export class NewDecibelMeterService {
 
   public listen(): Promise<string> {
     if (this.listening) {
-      console.log('Already listening to this source!');
-      return Promise.reject();
+      return Promise.reject('Already listening to a source');
     }
 
     if (this.source == null) {
@@ -233,14 +231,17 @@ export class NewDecibelMeterService {
         const maxDecibels = newDecibelMeterService.connection.analyser.maxDecibels;
 
         const value = newDecibelMeterService.connection.lastSample[0];
-        const percent = value / 255;
-        const dB = newDecibelMeterService.connection.analyser.minDecibels + ((newDecibelMeterService.connection.analyser.maxDecibels - newDecibelMeterService.connection.analyser.minDecibels) * percent);
+        // const percent = value / 255;
+        // const dB = minDecibels + ((maxDecibels - minDecibels) * percent);
 
         // console.log(`DB: ${dB} / Percent: ${percent}`);
         // console.log(dB);
         // console.log(minDecibels);
         // console.log(maxDecibels);
-        newDecibelMeterService.volume = dB - minDecibels;
+        // newDecibelMeterService.volume = dB - minDecibels;
+        // console.log(value);
+
+        newDecibelMeterService.volume = value;
       }
     }
 
