@@ -3,11 +3,12 @@ import {HttpClient} from '@angular/common/http';
 import {StorageService} from '../storage.service';
 import {Observable} from 'rxjs';
 import {environment} from '../../../environments/environment';
+import {HubConfig} from '../../_interfaces/hub';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ConnectService {
+export class HubService {
 
   constructor(private httpClient: HttpClient,
               private storageService: StorageService) {
@@ -21,8 +22,8 @@ export class ConnectService {
     return this.getToken() != null;
   }
 
-  private setToken(token: string): void {
-    this.storageService.set('hue_token', token);
+  private setToken(token: string | null): void {
+    token ? this.storageService.set('hue_token', token) : this.storageService.clear('hue_token');
   }
 
   public getHueIp(): string {
@@ -33,17 +34,23 @@ export class ConnectService {
     return this.getHueIp() != null;
   }
 
-  private setHueIp(ip: string): void {
-    this.storageService.set('hue_ip', ip);
+  private setHueIp(ip: string | null): void {
+    ip ? this.storageService.set('hue_ip', ip) : this.storageService.clear('hue_ip');
   }
 
+  public clearHub(): boolean {
+    this.setHueIp(null);
+    this.setToken(null);
+    return true;
+  }
+
+  /**
+   * Checks whether a given IP address is a valid Hue Hub
+   * @param ip The IP address
+   */
   public ipIsHub(ip: string): Promise<boolean> {
     return this.httpClient.get(`${ip}/api`).toPromise().then((value: any) => {
-      if (Array.isArray(value) && value.length === 1) {
-        return true;
-      }
-
-      return false;
+      return Array.isArray(value) && value.length === 1;
     });
   }
 
@@ -100,14 +107,26 @@ export class ConnectService {
         }
 
         reject();
-
-
-        // [{
-        //   "success": {
-        //     "username": "g6ciMXgtvVIgRFUPWZlkCj4L47WfpUn7U0GsjYTQ"
-        //   }
-        // }]
       });
     });
+  }
+
+  public getConfig(ip: string): Promise<HubConfig> {
+    return this.httpClient.get<HubConfig>(`${ip}/api/${this.getToken()}/config`)
+      .toPromise()
+      .then((config) => {
+        config.users = [];
+
+        for (const [key, value] of Object.entries(config.whitelist)) {
+          config.users.push({
+            id: key,
+            name: value.name,
+            'create date': value['create date'],
+            'last use date': value['last use date'],
+          });
+        }
+
+        return config;
+      });
   }
 }

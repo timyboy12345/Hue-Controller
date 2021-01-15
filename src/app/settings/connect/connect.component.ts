@@ -1,7 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ConnectService} from '../../_services/hue/connect.service';
+import {HubService} from '../../_services/hue/hub.service';
 import {PopupService} from '../../_services/popup.service';
 import {PopupType} from '../../_interfaces/popup';
+import {HubConfig} from '../../_interfaces/hub';
 
 @Component({
   selector: 'app-connect',
@@ -9,14 +10,15 @@ import {PopupType} from '../../_interfaces/popup';
   styleUrls: ['./connect.component.scss']
 })
 export class ConnectComponent implements OnInit, OnDestroy {
-  public ip = 'http://192.168.1.27';
+  public ip = 'http://';
   public canSubmit: boolean;
-  public connectedIp: string | null;
+  public connectedIp?: string;
+  public config?: HubConfig;
 
   constructor(private popupService: PopupService,
-              private connectService: ConnectService) {
+              private connectService: HubService) {
     this.canSubmit = false;
-    this.connectedIp = null;
+    this.connectedIp = undefined;
   }
 
 
@@ -25,6 +27,7 @@ export class ConnectComponent implements OnInit, OnDestroy {
 
     if (this.connectService.hasHueIp()) {
       this.connectedIp = this.connectService.getHueIp();
+      this.getConfig();
     }
   }
 
@@ -45,6 +48,7 @@ export class ConnectComponent implements OnInit, OnDestroy {
                 console.log(value);
                 this.connectedIp = ip;
                 this.popupService.add('Verbonden!', 'We zijn verbonden met een hub!', PopupType.SUCCESS);
+                this.getConfig();
               })
               .catch(reason => {
                 console.log(reason);
@@ -64,5 +68,19 @@ export class ConnectComponent implements OnInit, OnDestroy {
     } else {
       this.popupService.add('Voer een geldig IP-adres in', 'Het ingevoerde IP adres is niet geldig', PopupType.WARNING);
     }
+  }
+
+  public remove(): void {
+    this.connectService.clearHub();
+    this.config = undefined;
+    this.connectedIp = undefined;
+  }
+
+  private getConfig(): void {
+    this.connectService.getConfig(this.connectService.getHueIp())
+      .then(config => {
+        this.config = config;
+        console.log(config);
+      });
   }
 }

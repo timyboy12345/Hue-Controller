@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {ConnectService} from './connect.service';
+import {HubService} from './hub.service';
 import {HttpClient} from '@angular/common/http';
 import {Light} from '../../_interfaces/light';
 
@@ -8,7 +8,7 @@ import {Light} from '../../_interfaces/light';
 })
 export class LightService {
 
-  constructor(private connectService: ConnectService,
+  constructor(private connectService: HubService,
               private httpClient: HttpClient,) {
   }
 

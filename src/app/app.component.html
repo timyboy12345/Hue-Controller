@@ -1,5 +1,5 @@
 <nav
-  class="border-r border-gray-200 bg-white text-gray-800 fixed top-0 left-0 h-full md:w-1/4 lg:w-1/6 hidden md:flex flex-col py-4">
+  class="border-r border-gray-200 bg-white text-gray-800 fixed top-0 left-0 min-h-full md:w-1/4 lg:w-1/6 hidden md:flex flex-col py-4">
   <div class="px-4">
     <div class="text-xl font-bold">Hue Controller</div>
     <div class="text-sm text-gray-600">De ultieme controller</div>
@@ -35,17 +35,17 @@
 <!--  </div>-->
 <!--</div>-->
 
-<div class="absolute"></div>
+<!--<div class="absolute"></div>-->
 
 <!-- POPUPS -->
-<!--<div class="absolute bottom-14 md:bottom-0 right-0 w-full p-4 max-w-4xl" *ngIf="popups && popups.length > 0">-->
-<!--  <div class="bg-gray-700 text-gray-200 text-nav shadow rounded p-3">-->
-<!--    <div class="flex flex-row justify-between">-->
-<!--      <p>{{ popups[0].content }}</p>-->
-<!--      <button class="text-blue-200 mr-2" (click)="popups[0].close()">Oké</button>-->
-<!--    </div>-->
-<!--  </div>-->
-<!--</div>-->
+<div class="absolute bottom-14 md:bottom-0 right-0 w-full p-4 max-w-4xl" *ngIf="popups && popups.length > 0">
+  <div class="bg-gray-700 text-gray-200 text-nav shadow rounded p-3">
+    <div class="flex flex-row justify-between">
+      <p>{{ popups[0].content }}</p>
+      <button class="text-blue-200 mr-2" (click)="popups[0].close()">Oké</button>
+    </div>
+  </div>
+</div>
 
 <!-- MOBILE NAVIGATION-->
 <div class="fixed md:hidden w-full bottom-0 p-2 bg-blue-800">

@@ -1,4 +1,5 @@
 import {Injectable} from '@angular/core';
+import {max} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +13,14 @@ export class NewDecibelMeterService {
   private listening = false;
   private connection?: Connection;
 
+  private volume?: number;
+
   public supportsMicrophoneInput: boolean;
   private listeningInterval: any;
+
+  public getVolume(): number {
+    return this.volume ?? -1;
+  }
 
   constructor() {
     this.supportsMicrophoneInput = false;
@@ -170,10 +177,10 @@ export class NewDecibelMeterService {
     return;
   }
 
-  public listen(): void {
+  public listen(): Promise<string> {
     if (this.listening) {
       console.log('Already listening to this source!');
-      return;
+      return Promise.reject();
     }
 
     if (this.source == null) {
@@ -190,6 +197,8 @@ export class NewDecibelMeterService {
     if (this.listeningInterval == null) {
       this.startLoop();
     }
+
+    return Promise.resolve('Successfully connected');
   }
 
   public stopListening(): void {
@@ -206,6 +215,8 @@ export class NewDecibelMeterService {
     }
 
     this.connection.source.disconnect(this.connection.analyser);
+    this.connection.stream.stop();
+    this.connection.source.disconnect();
     this.listening = false;
     clearInterval(this.listeningInterval);
     this.listeningInterval = null;
@@ -218,15 +229,18 @@ export class NewDecibelMeterService {
       if (newDecibelMeterService.listening && newDecibelMeterService.connection) {
         newDecibelMeterService.connection.analyser.getByteFrequencyData(newDecibelMeterService.connection.lastSample);
 
-        console.log(newDecibelMeterService.connection.analyser.minDecibels);
-        console.log(newDecibelMeterService.connection.analyser.maxDecibels);
+        const minDecibels = newDecibelMeterService.connection.analyser.minDecibels;
+        const maxDecibels = newDecibelMeterService.connection.analyser.maxDecibels;
 
         const value = newDecibelMeterService.connection.lastSample[0];
         const percent = value / 255;
         const dB = newDecibelMeterService.connection.analyser.minDecibels + ((newDecibelMeterService.connection.analyser.maxDecibels - newDecibelMeterService.connection.analyser.minDecibels) * percent);
 
-        console.log(`DB: ${dB} / Percent: ${percent}`);
-        // dispatch(meter, 'sample', [dB, percent, value]);
+        // console.log(`DB: ${dB} / Percent: ${percent}`);
+        // console.log(dB);
+        // console.log(minDecibels);
+        // console.log(maxDecibels);
+        newDecibelMeterService.volume = dB - minDecibels;
       }
     }
 

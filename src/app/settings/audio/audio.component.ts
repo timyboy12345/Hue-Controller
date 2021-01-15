@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Popup, PopupType} from '../../_interfaces/popup';
-import {ConnectService} from '../../_services/hue/connect.service';
+import {HubService} from '../../_services/hue/hub.service';
 import {NewDecibelMeterService} from '../../_services/new-decibel-meter.service';
 import {PopupService} from '../../_services/popup.service';
 
@@ -12,12 +12,16 @@ import {PopupService} from '../../_services/popup.service';
 export class AudioComponent implements OnInit, OnDestroy {
   public devices?: MediaDeviceInfo[];
   private shouldClosePopups: Popup[] = [];
+  private interval: any;
+
+  public listening = false;
+  public volume?: number;
 
   public get supportsAudioInput(): boolean {
     return this.newDecibelMeterService.supportsMicrophoneInput;
   }
 
-  constructor(private connectService: ConnectService,
+  constructor(private connectService: HubService,
               private newDecibelMeterService: NewDecibelMeterService,
               private popupService: PopupService) {
   }
@@ -32,13 +36,20 @@ export class AudioComponent implements OnInit, OnDestroy {
             this.newDecibelMeterService.connectToId(this.devices[0].deviceId, this.sourceChosen).then(value => {
               console.log(`Succesfully connected to source: ${value}`);
 
-              this.newDecibelMeterService.listen();
+              this.newDecibelMeterService.listen().then(() => {
+                this.listening = true;
+
+                this.interval = window.setInterval(() => {
+                  this.getVolume();
+                }, 500);
+              });
             });
           }, 400);
         }
       })
       .catch(reason => {
-        const popup = this.popupService.add('Geen toegang tot je microfoon', 'Geen toegang tot microfoons: ' + reason, PopupType.DANGER);
+        // const popup = this.popupService.add('Geen toegang tot je microfoon', 'Geen toegang tot microfoons: ' + reason, PopupType.DANGER);
+        const popup = this.popupService.add('Geen toegang tot je microfoon', 'We hebben geen toegang tot je microfoon, heb je wel toestemming gegeven?', PopupType.DANGER);
         this.shouldClosePopups.push(popup);
       });
   }
@@ -52,7 +63,16 @@ export class AudioComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.disconnect();
+  }
+
+  private disconnect(): void {
+    this.listening = false;
     this.newDecibelMeterService.disconnect();
     this.shouldClosePopups.forEach(p => p.close());
+  }
+
+  private getVolume(): void {
+    this.volume = this.newDecibelMeterService.getVolume();
   }
 }

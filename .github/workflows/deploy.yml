@@ -28,13 +28,13 @@ jobs:
           npm install
           npm run build:prod
           # npm run test
-      - name: Remove all files from current installation
-        uses: garygrossgarten/github-action-ssh@release
-        with:
-          command: rm /var/www/home.arendz.nl/*
-          host: ${{ secrets.DEPLOY_IP }}
-          username: ${{ secrets.DEPLOY_USERNAME }}
-          password: ${{ secrets.DEPLOY_PASSWORD }}
+#      - name: Remove all files from current installation
+#        uses: garygrossgarten/github-action-ssh@release
+#        with:
+#          command: rm /var/www/home.arendz.nl/*
+#          host: ${{ secrets.DEPLOY_IP }}
+#          username: ${{ secrets.DEPLOY_USERNAME }}
+#          password: ${{ secrets.DEPLOY_PASSWORD }}
       - name: Deploy to server
         uses: garygrossgarten/github-action-scp@release
         with:
